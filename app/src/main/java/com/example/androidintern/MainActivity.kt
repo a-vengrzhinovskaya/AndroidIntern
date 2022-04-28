@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
         val button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            textView.text = "Button pressed"
+            textView.setText(R.string.button_pressed)
         }
     }
 }
