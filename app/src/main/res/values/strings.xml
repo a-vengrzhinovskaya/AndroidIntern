@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">AndroidIntern</string>
     <string name="ok">OK</string>
+    <string-array name="color_names">
+        <item>red</item>
+        <item>orange</item>
+        <item>yellow</item>
+        <item>green</item>
+        <item>blue</item>
+        <item>purple</item>
+        <item>pink</item>
+        <item>brown</item>
+        <item>black</item>
+        <item>white</item>
+        <item>grey</item>
+    </string-array>
 </resources>
