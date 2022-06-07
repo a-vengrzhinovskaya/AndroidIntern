@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ColorAdapter(
     private var colorNames: List<String>,
-    private val cellClick: CellClickListener,
     private val callback: (color: String) -> Unit
 ) :
     RecyclerView.Adapter<ColorViewHolder>() {
@@ -18,7 +17,7 @@ class ColorAdapter(
     }
 
     override fun onBindViewHolder(holder: ColorViewHolder, position: Int) {
-        holder.bind(colorNames[position], callback, cellClick)
+        holder.bind(colorNames[position], callback)
     }
 
     override fun getItemCount() = colorNames.size
@@ -32,10 +31,10 @@ class ColorAdapter(
 class ColorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val textView = view.findViewById<TextView>(R.id.recycler_text_view)
 
-    fun bind(item: String, callback: (color: String) -> Unit, cellClick: CellClickListener) {
+    fun bind(item: String, callback: (color: String) -> Unit) {
         textView.text = item
         textView.setOnClickListener {
-            cellClick.onCellClickListener(item)
+            callback.invoke(item)
         }
     }
 }
