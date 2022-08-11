@@ -7,12 +7,9 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btOK"
+    <ImageView
+        android:id="@+id/ivGlide"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/ok" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
