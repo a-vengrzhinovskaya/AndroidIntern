@@ -27,7 +27,7 @@ class PhotoActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.favorite -> {
-                this.finish()
+                finish()
                 return true
             }
         }

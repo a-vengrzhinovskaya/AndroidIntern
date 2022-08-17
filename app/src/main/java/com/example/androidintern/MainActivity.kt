@@ -33,13 +33,6 @@ class MainActivity : AppCompatActivity() {
     private fun getPhotos(): Picture =
         Gson().fromJson(JSON_STRING, Picture::class.java)
 
-    private fun printPhotos() {
-        val photos = getPhotos()
-        photos.photos.photo.forEach {
-            Log.d("photo", it.toString())
-        }
-    }
-
     private fun initRV() {
         binding.rvPhotos.layoutManager = GridLayoutManager(this, 2)
         binding.rvPhotos.adapter = adapter
