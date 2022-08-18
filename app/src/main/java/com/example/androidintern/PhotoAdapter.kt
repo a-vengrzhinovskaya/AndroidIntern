@@ -8,7 +8,7 @@ import com.example.androidintern.databinding.ItemPhotoHolderBinding
 
 class PhotoAdapter(
     private var photos: List<Picture.Photos.Photo>,
-    private val callback: (color: String) -> Unit
+    private val callback: (photo: Picture.Photos.Photo) -> Unit
 ) :
     RecyclerView.Adapter<PhotoViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
@@ -30,7 +30,7 @@ class PhotoAdapter(
 
 class PhotoViewHolder(private val binding: ItemPhotoHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(photo: Picture.Photos.Photo, callback: (color: String) -> Unit) {
+    fun bind(photo: Picture.Photos.Photo, callback: (photo: Picture.Photos.Photo) -> Unit) {
         val url =
             "https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_m.jpg"
         Glide
@@ -39,7 +39,7 @@ class PhotoViewHolder(private val binding: ItemPhotoHolderBinding) :
             .into(binding.ivPhoto)
 
         binding.ivPhoto.setOnClickListener{
-            callback(url)
+            callback(photo)
         }
     }
 }
