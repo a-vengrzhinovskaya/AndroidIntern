@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 
 private const val JSON_STRING =
@@ -25,9 +27,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        printPhotos()
         initRV()
         adapter.setContent(getPhotos().photos.photo)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data != null) {
+          Snackbar.make(binding.main, getString(R.string.snackbar), Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun getPhotos(): Picture =
@@ -42,6 +50,6 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, PhotoActivity::class.java).apply {
             putExtra(PhotoActivity.URL_KEY, url)
         }
-        startActivity(intent)
+        startActivityForResult(intent, 1)
     }
 }
