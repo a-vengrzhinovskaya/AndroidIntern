@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-            Snackbar.make(binding.main, getString(R.string.snackbar), Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, getString(R.string.snackbar), Snackbar.LENGTH_SHORT).show()
         }
     }
 
