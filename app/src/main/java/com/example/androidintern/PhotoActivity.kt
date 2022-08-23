@@ -1,6 +1,5 @@
 package com.example.androidintern
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -28,7 +27,7 @@ class PhotoActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.favorite -> {
-                setResult(RESULT_OK, Intent())
+                setResult(RESULT_OK)
                 finish()
                 return true
             }
