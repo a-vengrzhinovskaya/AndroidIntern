@@ -1,6 +1,8 @@
 package com.example.androidintern
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.databinding.ActivityMainBinding
@@ -123,18 +125,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() {
-        binding.rvPhoneNumbers.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.rvPhoneNumbers.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvPhoneNumbers.adapter = adapter
     }
 
     private fun searchNumber() {
-        binding.btApply.setOnClickListener {
-            val filteredNumbers = getNumbers().filter {
-                it.name.contains(binding.etSearch.text, true) ||
-                        it.type.contains(binding.etSearch.text, true) ||
-                        it.phone.contains(binding.etSearch.text)
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val filteredNumbers = getNumbers().filter {
+                    it.name.contains(binding.etSearch.text, true) ||
+                            it.type.contains(binding.etSearch.text, true) ||
+                            it.phone.contains(binding.etSearch.text)
+                }
+                adapter.setContent(filteredNumbers)
             }
-            adapter.setContent(filteredNumbers)
-        }
+
+            override fun afterTextChanged(editable: Editable?) {}
+        })
     }
 }

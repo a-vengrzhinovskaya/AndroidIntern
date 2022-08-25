@@ -3,25 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/etSearch"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_margin="8dp"
-        android:background="@android:color/holo_blue_light"
-        android:hint="@string/search"
-        android:textSize="14sp" />
-
-    <Button
-        android:id="@+id/btApply"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/apply"
-        android:textSize="12sp" />
+        android:background="@android:color/holo_blue_light">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="8dp"
+            android:hint="@string/search"
+            android:textSize="14sp" />
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPhoneNumbers"
