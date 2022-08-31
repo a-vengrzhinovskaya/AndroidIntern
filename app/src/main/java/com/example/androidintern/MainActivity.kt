@@ -106,7 +106,7 @@ private const val JSON_STRING = "[{\n" +
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val adapter = NumberAdapter(getNumbers())
+    private val adapter = NumberAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,6 +126,7 @@ class MainActivity : AppCompatActivity() {
     private fun initRecyclerView() {
         binding.rvPhoneNumbers.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        adapter.submitList(getNumbers())
         binding.rvPhoneNumbers.adapter = adapter
     }
 
