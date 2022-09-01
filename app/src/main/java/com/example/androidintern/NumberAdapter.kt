@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.androidintern.databinding.ItemNumberHolderBinding
 
 class NumberAdapter :
-    ListAdapter<PhoneNumber, PhoneNumberViewHolder>(PhoneNumberItemDiffCallback()) {
+    ListAdapter<PhoneNumber, PhoneNumberViewHolder>(PhoneNumberItemDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhoneNumberViewHolder {
         val binding =
             ItemNumberHolderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -17,10 +17,6 @@ class NumberAdapter :
 
     override fun onBindViewHolder(holder: PhoneNumberViewHolder, position: Int) {
         holder.bind(getItem(position))
-    }
-
-    fun setContent(newNumbers: List<PhoneNumber>) {
-        submitList(newNumbers)
     }
 }
 
@@ -33,7 +29,7 @@ class PhoneNumberViewHolder(private val binding: ItemNumberHolderBinding) :
     }
 }
 
-class PhoneNumberItemDiffCallback : DiffUtil.ItemCallback<PhoneNumber>() {
+object PhoneNumberItemDiffCallback : DiffUtil.ItemCallback<PhoneNumber>() {
     override fun areItemsTheSame(oldItem: PhoneNumber, newItem: PhoneNumber): Boolean =
         oldItem == newItem
 

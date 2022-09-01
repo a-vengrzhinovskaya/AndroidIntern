@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                         it.type.contains(binding.toolbar.etSearch.text, true) ||
                         it.phone.contains(binding.toolbar.etSearch.text)
             }
-            adapter.setContent(filteredNumbers)
+            adapter.submitList(filteredNumbers)
         }
     }
 }
