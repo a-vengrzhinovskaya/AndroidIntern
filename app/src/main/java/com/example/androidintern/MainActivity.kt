@@ -1,111 +1,21 @@
 package com.example.androidintern
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.databinding.ActivityMainBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-private const val JSON_STRING = "[{\n" +
-        "    \"name\": \"(Приёмная)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-80\",\n" +
-        "    \"type\": \"\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Бухгалтерия)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-64\",\n" +
-        "    \"type\": \"\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Бухгалтерия)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-18-08\",\n" +
-        "    \"type\": \"\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Юридическое бюро)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-63\",\n" +
-        "    \"type\": \"\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Отдел правовой и кадровой работы)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-93\",\n" +
-        "    \"type\": \"\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Отдел материально-технического снабжения)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-18-12\",\n" +
-        "    \"type\": \"\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"\",\n" +
-        "    \"phone\": \"+375 44 712 36 26\",\n" +
-        "    \"type\": \"Сектор сбыта бумаги\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Реализация на внутренний рынок)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-79\",\n" +
-        "    \"type\": \"Сектор сбыта бумаги\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Реализация на внешний рынок)\",\n" +
-        "    \"phone\": \"+375 (2239) 4-11-77\",\n" +
-        "    \"type\": \"Сектор сбыта бумаги\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Реализация на внутренний рынок)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-18-25\",\n" +
-        "    \"type\": \"Сектор сбыта бумаги\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"\",\n" +
-        "    \"phone\": \"+375 44 580 09 70\",\n" +
-        "    \"type\": \"Сектор сбыта продукции деревообработки\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Реализация продукции деревообработки)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-18-42\",\n" +
-        "    \"type\": \"Сектор сбыта продукции деревообработки\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(Реализация продукции деревообработки)\",\n" +
-        "    \"phone\": \"+375 (2239) 3-64-71\",\n" +
-        "    \"type\": \"Сектор сбыта продукции деревообработки\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"\",\n" +
-        "    \"phone\": \"+375 29 352 25 20\",\n" +
-        "    \"type\": \"Реализация домов, бань, беседок, клеёного бруса\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"\",\n" +
-        "    \"phone\": \"+375 (2239) 7-18-43\",\n" +
-        "    \"type\": \"Реализация домов, бань, беседок, клеёного бруса\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(приемная)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-80\",\n" +
-        "    \"type\": \"Факс\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(отдел сбыта)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-79\",\n" +
-        "    \"type\": \"Факс\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(отдел материально-технического снабжения)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-17-82\",\n" +
-        "    \"type\": \"Факс\"\n" +
-        "  },\n" +
-        "  {\n" +
-        "    \"name\": \"(служба главного энергетика)\",\n" +
-        "    \"phone\": \"+375 (2239) 7-18-06\",\n" +
-        "    \"type\": \"Факс\"\n" +
-        "  }]"
+private const val FILTER_KEY = "filter_value"
+private const val DEFAULT_VALUE = ""
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var sharedPref: SharedPreferences
     private val adapter = NumberAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,11 +26,12 @@ class MainActivity : AppCompatActivity() {
 
         initRecyclerView()
         searchNumber()
+        restoreFilterState()
     }
 
     private fun getNumbers(): List<PhoneNumber> {
         val itemType = object : TypeToken<List<PhoneNumber>>() {}.type
-        return Gson().fromJson(JSON_STRING, itemType)
+        return Gson().fromJson(jsonString.json, itemType)
     }
 
     private fun initRecyclerView() {
@@ -138,6 +49,12 @@ class MainActivity : AppCompatActivity() {
                         it.phone.contains(binding.toolbar.etSearch.text)
             }
             adapter.submitList(filteredNumbers)
+            sharedPref.edit { putString(FILTER_KEY, binding.toolbar.etSearch.text.toString()) }
         }
+    }
+
+    private fun restoreFilterState() {
+        sharedPref = getPreferences(MODE_PRIVATE)
+        binding.toolbar.etSearch.setText(sharedPref.getString(FILTER_KEY, DEFAULT_VALUE))
     }
 }
