@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidintern.databinding.ItemNumberHolderBinding
 
-class NumberAdapter :
+class NumberAdapter(private val callback: (number: PhoneNumber) -> Unit) :
     ListAdapter<PhoneNumber, PhoneNumberViewHolder>(PhoneNumberItemDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhoneNumberViewHolder {
         val binding =
@@ -16,16 +16,20 @@ class NumberAdapter :
     }
 
     override fun onBindViewHolder(holder: PhoneNumberViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), callback)
     }
 }
 
 class PhoneNumberViewHolder(private val binding: ItemNumberHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(number: PhoneNumber) {
+    fun bind(number: PhoneNumber, callback: (number: PhoneNumber) -> Unit) {
         binding.tvName.text = number.name
         binding.tvPhone.text = number.phone
         binding.tvType.text = number.type
+
+        binding.root.setOnClickListener {
+            callback(number)
+        }
     }
 }
 
