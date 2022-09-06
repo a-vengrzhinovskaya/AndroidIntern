@@ -23,7 +23,6 @@ private const val REQUEST_CODE = 110
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPref: SharedPreferences
-    private lateinit var currentNumber: PhoneNumber
     private val adapter = NumberAdapter { makePhoneCall(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        requestPermission()
         initRecyclerView()
         searchNumber()
         restoreFilterState()
@@ -43,12 +43,6 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            makePhoneCall(currentNumber)
-        } else {
-            Toast.makeText(this,"Denied", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun getNumbers(): List<PhoneNumber> {
@@ -61,6 +55,19 @@ class MainActivity : AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter.submitList(getNumbers())
         binding.rvPhoneNumbers.adapter = adapter
+    }
+
+    private fun requestPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.CALL_PHONE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(android.Manifest.permission.CALL_PHONE),
+                REQUEST_CODE
+            )
+        }
     }
 
     private fun searchNumber() {
@@ -81,19 +88,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makePhoneCall(number: PhoneNumber) {
-        currentNumber = number
         if (ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.CALL_PHONE
-            ) != PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(android.Manifest.permission.CALL_PHONE),
-                REQUEST_CODE
-            )
-        } else {
             val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number.phone, null))
             startActivity(intent)
+        } else {
+            Toast.makeText(this, "Denied", Toast.LENGTH_SHORT).show()
         }
     }
 }
