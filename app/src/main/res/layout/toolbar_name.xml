@@ -2,13 +2,12 @@
 <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/holo_blue_light">
+    android:background="@android:color/darker_gray">
 
-    <EditText
-        android:id="@+id/etSearch"
+    <TextView
+        android:id="@+id/tvCityName"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:hint="@string/search"
-        android:textSize="14sp" />
+        android:textSize="20sp" />
 </androidx.appcompat.widget.Toolbar>

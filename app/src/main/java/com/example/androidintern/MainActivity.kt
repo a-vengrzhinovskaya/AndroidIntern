@@ -1,21 +1,23 @@
 package com.example.androidintern
 
-import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.databinding.ActivityMainBinding
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-private const val FILTER_KEY = "filter_value"
-private const val DEFAULT_VALUE = ""
+private const val API_KEY = "8db7a14a267d03a0f3c870429391132e"
+private const val CITY = "Kemerovo"
+private const val UNITS = "metric"
+private const val BASE_URL = "https://api.openweathermap.org/"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var sharedPref: SharedPreferences
     private val adapter = NumberAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,37 +26,42 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initRecyclerView()
-        searchNumber()
-        restoreFilterState()
+        initToolbar()
+        getWeather()
     }
 
-    private fun getNumbers(): List<PhoneNumber> {
-        val itemType = object : TypeToken<List<PhoneNumber>>() {}.type
-        return Gson().fromJson(jsonString.json, itemType)
-    }
+    private fun getWeather() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val weatherService = retrofit.create(WeatherApi::class.java)
+        weatherService.getWeather(CITY, API_KEY, UNITS).enqueue(
+            object : Callback<WeatherNW> {
+                override fun onResponse(
+                    call: Call<WeatherNW>,
+                    response: Response<WeatherNW>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { initRecyclerView(it) }
+                    }
+                }
 
-    private fun initRecyclerView() {
-        binding.rvPhoneNumbers.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        adapter.submitList(getNumbers())
-        binding.rvPhoneNumbers.adapter = adapter
-    }
-
-    private fun searchNumber() {
-        binding.toolbar.etSearch.addTextChangedListener {
-            val filteredNumbers = getNumbers().filter {
-                it.name.contains(binding.toolbar.etSearch.text, true) ||
-                        it.type.contains(binding.toolbar.etSearch.text, true) ||
-                        it.phone.contains(binding.toolbar.etSearch.text)
+                override fun onFailure(call: Call<WeatherNW>, t: Throwable) {
+                    Toast.makeText(this@MainActivity, "Failed", Toast.LENGTH_SHORT).show()
+                }
             }
-            adapter.submitList(filteredNumbers)
-            sharedPref.edit { putString(FILTER_KEY, binding.toolbar.etSearch.text.toString()) }
-        }
+        )
     }
 
-    private fun restoreFilterState() {
-        sharedPref = getPreferences(MODE_PRIVATE)
-        binding.toolbar.etSearch.setText(sharedPref.getString(FILTER_KEY, DEFAULT_VALUE))
+    private fun initToolbar() {
+        binding.toolbar.tvCityName.text = CITY
+    }
+
+    private fun initRecyclerView(weather: WeatherNW) {
+        binding.rvWeather.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        adapter.submitList(weather.list)
+        binding.rvWeather.adapter = adapter
     }
 }
