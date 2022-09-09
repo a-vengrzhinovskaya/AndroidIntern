@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@android:color/holo_blue_light"
+    android:background="@color/warm_weather"
     android:orientation="vertical">
 
     <TextView
@@ -13,18 +13,18 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@id/ivWeatherIcon"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvTemperature"
+        app:layout_constraintStart_toEndOf="@id/ivWeatherIcon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivWeatherIcon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        app:layout_constraintEnd_toStartOf="@id/tvTemperature"
-        app:layout_constraintStart_toEndOf="@id/tvDate"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvDate"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -33,9 +33,9 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@id/tvPressure"
-        app:layout_constraintStart_toEndOf="@id/ivWeatherIcon"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvPressure"
+        app:layout_constraintStart_toEndOf="@id/tvDate"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -44,9 +44,9 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvTemperature"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
