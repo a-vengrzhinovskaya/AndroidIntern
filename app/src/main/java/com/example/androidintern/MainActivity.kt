@@ -18,6 +18,10 @@ private const val BASE_URL = "https://api.openweathermap.org/"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val weatherApi by lazy {
+        createWeatherApi()
+    }
+
     private val adapter = NumberAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,24 +30,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initToolbar()
+        initRecyclerView()
         getWeather()
     }
 
     private fun getWeather() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val weatherService = retrofit.create(WeatherApi::class.java)
-        weatherService.getWeather(CITY, API_KEY, UNITS).enqueue(
+        weatherApi.getWeather(CITY, API_KEY, UNITS).enqueue(
             object : Callback<WeatherNW> {
                 override fun onResponse(
                     call: Call<WeatherNW>,
                     response: Response<WeatherNW>
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.let { initRecyclerView(it) }
+                        response.body()?.let { weatherData ->
+                            adapter.submitList(weatherData.list)
+                            initToolbar(weatherData.city.name)
+                        }
                     }
                 }
 
@@ -54,14 +56,21 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun initToolbar() {
-        binding.toolbar.tvCityName.text = CITY
+    private fun createWeatherApi(): WeatherApi {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        return retrofit.create(WeatherApi::class.java)
     }
 
-    private fun initRecyclerView(weather: WeatherNW) {
+    private fun initToolbar(cityName: String) {
+        binding.toolbar.tvCityName.text = cityName
+    }
+
+    private fun initRecyclerView() {
         binding.rvWeather.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        adapter.submitList(weather.list)
         binding.rvWeather.adapter = adapter
     }
 }

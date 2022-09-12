@@ -17,22 +17,26 @@ private const val TYPE_COLD = 2
 class NumberAdapter :
     ListAdapter<WeatherNW.WeatherData, RecyclerView.ViewHolder>(WeatherItemDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == TYPE_WARM) {
-            val binding =
-                ItemWarmWeatherHolderBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-            return WarmWeatherViewHolder(binding)
-        } else {
-            val binding =
-                ItemColdWeatherHolderBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-            return ColdWeatherViewHolder(binding)
+        when (viewType) {
+            TYPE_WARM -> {
+                val binding =
+                    ItemWarmWeatherHolderBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                return WarmWeatherViewHolder(binding)
+            }
+            TYPE_COLD -> {
+                val binding =
+                    ItemColdWeatherHolderBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                return ColdWeatherViewHolder(binding)
+            }
+            else -> throw Exception()
         }
     }
 
@@ -43,12 +47,12 @@ class NumberAdapter :
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int =
         if (getItem(position).main.temp < TEMPERATURE) {
-            return TYPE_COLD
+            TYPE_COLD
+        } else {
+            TYPE_WARM
         }
-        return TYPE_WARM
-    }
 }
 
 class WarmWeatherViewHolder(private val binding: ItemWarmWeatherHolderBinding) :
@@ -57,7 +61,7 @@ class WarmWeatherViewHolder(private val binding: ItemWarmWeatherHolderBinding) :
         binding.tvDate.text = weather.dtTxt
         Glide
             .with(binding.root)
-            .load("$ICON_URL${weather.weather.first().icon}.png")
+            .load(getImageURL(weather))
             .into(binding.ivWeatherIcon)
         binding.tvPressure.text = weather.main.pressure.toString()
         binding.tvTemperature.text = weather.main.temp.toString()
@@ -70,12 +74,15 @@ class ColdWeatherViewHolder(private val binding: ItemColdWeatherHolderBinding) :
         binding.tvDate.text = weather.dtTxt
         Glide
             .with(binding.root)
-            .load("$ICON_URL${weather.weather.first().icon}.png")
+            .load(getImageURL(weather))
             .into(binding.ivWeatherIcon)
         binding.tvPressure.text = weather.main.pressure.toString()
         binding.tvTemperature.text = weather.main.temp.toString()
     }
 }
+
+private fun getImageURL(weather: WeatherNW.WeatherData) =
+    "$ICON_URL${weather.weather.first().icon}.png"
 
 object WeatherItemDiffCallback : DiffUtil.ItemCallback<WeatherNW.WeatherData>() {
     override fun areItemsTheSame(
