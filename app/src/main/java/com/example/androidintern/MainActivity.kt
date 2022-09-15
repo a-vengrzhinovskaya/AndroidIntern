@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.databinding.ActivityMainBinding
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,15 +15,12 @@ private const val API_KEY = "8db7a14a267d03a0f3c870429391132e"
 private const val CITY = "Kemerovo"
 private const val UNITS = "metric"
 private const val BASE_URL = "https://api.openweathermap.org/"
-private const val SAVE_INSTANCE_KEY = "json"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val weatherApi by lazy {
         createWeatherApi()
     }
-    private lateinit var weatherJson: String
-
     private val adapter = NumberAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,24 +30,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecyclerView()
-        if (savedInstanceState == null) {
+        if (WeatherStore.weathers == null) {
             getWeather()
         } else {
-            restoreWeather(savedInstanceState)
+            restoreWeather()
         }
     }
 
-    private fun restoreWeather(savedInstanceState: Bundle) {
-        weatherJson = savedInstanceState.getString(SAVE_INSTANCE_KEY).toString()
-        val weather = Gson().fromJson(weatherJson, WeatherNW::class.java)
-        adapter.submitList(weather.list)
-        initToolbar(weather.city.name)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putString(SAVE_INSTANCE_KEY, weatherJson)
+    private fun restoreWeather() {
+        adapter.submitList(WeatherStore.weathers?.list)
+        initToolbar(WeatherStore.weathers?.city?.name.toString())
     }
 
     private fun getWeather() {
@@ -64,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         response.body()?.let { weatherData ->
                             adapter.submitList(weatherData.list)
-                            weatherJson = Gson().toJson(weatherData)
+                            WeatherStore.weathers = weatherData
                             initToolbar(weatherData.city.name)
                         }
                     }
