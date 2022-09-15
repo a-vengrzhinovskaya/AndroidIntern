@@ -36,8 +36,6 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
         if (savedInstanceState == null) {
             getWeather()
-        } else {
-            restoreWeather(savedInstanceState)
         }
     }
 
@@ -52,6 +50,12 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
 
         outState.putString(SAVE_INSTANCE_KEY, weatherJson)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        restoreWeather(savedInstanceState)
     }
 
     private fun getWeather() {
