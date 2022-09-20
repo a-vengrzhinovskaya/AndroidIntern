@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun restoreFilterState() {
-        sharedPref = binding.root.context.getSharedPreferences("pref", MODE_PRIVATE)
+        sharedPref = getPreferences(MODE_PRIVATE)
         binding.toolbar.etSearch.setText(sharedPref.getString(FILTER_KEY, DEFAULT_VALUE))
     }
 }
