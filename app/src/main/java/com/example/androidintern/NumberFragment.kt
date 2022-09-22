@@ -1,6 +1,7 @@
 package com.example.androidintern
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -8,13 +9,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.databinding.FragmentNumberBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+private const val FILTER_KEY = "filter_value"
+private const val DEFAULT_VALUE = ""
 
 class NumberFragment : Fragment() {
     private lateinit var binding: FragmentNumberBinding
+    private lateinit var sharedPref: SharedPreferences
     private val adapter = NumberAdapter { makePhoneCall(it) }
 
     override fun onCreateView(
@@ -24,6 +34,8 @@ class NumberFragment : Fragment() {
         binding = FragmentNumberBinding.inflate(layoutInflater)
 
         initRecyclerView()
+        searchNumber()
+        restoreFilterState()
 
         return binding.root
     }
@@ -31,6 +43,7 @@ class NumberFragment : Fragment() {
     private fun initRecyclerView() {
         binding.rvPhoneNumbers.layoutManager =
             LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
+        adapter.submitList(getNumbers())
         binding.rvPhoneNumbers.adapter = adapter
     }
 
@@ -47,7 +60,26 @@ class NumberFragment : Fragment() {
         }
     }
 
-    fun fragmentSubmitList(phones: List<PhoneNumber>) {
-        adapter.submitList(phones)
+    private fun getNumbers(): List<PhoneNumber> {
+        val itemType = object : TypeToken<List<PhoneNumber>>() {}.type
+        return Gson().fromJson(jsonString.json, itemType)
+    }
+
+    private fun searchNumber() {
+        binding.toolbar.etSearch.addTextChangedListener {
+            val filteredNumbers = getNumbers().filter {
+                it.name.contains(binding.toolbar.etSearch.text, true) ||
+                        it.type.contains(binding.toolbar.etSearch.text, true) ||
+                        it.phone.contains(binding.toolbar.etSearch.text)
+            }
+            adapter.submitList(filteredNumbers)
+            sharedPref.edit { putString(FILTER_KEY, binding.toolbar.etSearch.text.toString()) }
+        }
+    }
+
+    private fun restoreFilterState() {
+        sharedPref =
+            requireActivity().getSharedPreferences(FILTER_KEY, AppCompatActivity.MODE_PRIVATE)
+        binding.toolbar.etSearch.setText(sharedPref.getString(FILTER_KEY, DEFAULT_VALUE))
     }
 }

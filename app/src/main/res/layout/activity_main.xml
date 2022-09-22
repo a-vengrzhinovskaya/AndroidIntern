@@ -6,12 +6,8 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar_search" />
-
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentPhones"
+        android:id="@+id/fcvPhones"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
