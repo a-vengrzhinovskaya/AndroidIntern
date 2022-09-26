@@ -1,7 +1,7 @@
 package com.example.androidintern
 
-object jsonString {
-    const val json = "[{\n" +
+object WeatherJson {
+    const val string = "[{\n" +
             "    \"name\": \"(Приёмная)\",\n" +
             "    \"phone\": \"+375 (2239) 7-17-80\",\n" +
             "    \"type\": \"\"\n" +

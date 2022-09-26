@@ -23,21 +23,27 @@ private const val FILTER_KEY = "filter_value"
 private const val DEFAULT_VALUE = ""
 
 class NumberFragment : Fragment() {
-    private lateinit var binding: FragmentNumberBinding
     private lateinit var sharedPref: SharedPreferences
+    private var _binding: FragmentNumberBinding? = null
+    private val binding get() = _binding!!
     private val adapter = NumberAdapter { makePhoneCall(it) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentNumberBinding.inflate(layoutInflater)
+        _binding = FragmentNumberBinding.inflate(layoutInflater)
 
         initRecyclerView()
         searchNumber()
         restoreFilterState()
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun initRecyclerView() {
@@ -62,7 +68,7 @@ class NumberFragment : Fragment() {
 
     private fun getNumbers(): List<PhoneNumber> {
         val itemType = object : TypeToken<List<PhoneNumber>>() {}.type
-        return Gson().fromJson(jsonString.json, itemType)
+        return Gson().fromJson(WeatherJson.string, itemType)
     }
 
     private fun searchNumber() {
