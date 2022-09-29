@@ -1,7 +1,6 @@
 package com.example.androidintern
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.databinding.ActivityMainBinding
@@ -12,6 +11,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 
 private const val API_KEY = "8db7a14a267d03a0f3c870429391132e"
 private const val CITY = "Kemerovo"
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<WeatherNW>, t: Throwable) {
-                    Toast.makeText(this@MainActivity, "Failed", Toast.LENGTH_SHORT).show()
+                    Timber.d(t)
                 }
             }
         )
@@ -71,12 +71,12 @@ class MainActivity : AppCompatActivity() {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(createInterceptor())
+            .client(getOkHttpClient())
             .build()
         return retrofit.create(WeatherApi::class.java)
     }
 
-    private fun createInterceptor(): OkHttpClient {
+    private fun getOkHttpClient(): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         val okHttpClient = OkHttpClient.Builder()

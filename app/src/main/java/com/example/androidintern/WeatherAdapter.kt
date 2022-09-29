@@ -36,7 +36,7 @@ class NumberAdapter :
                     )
                 return ColdWeatherViewHolder(binding)
             }
-            else -> throw Exception()
+            else -> throw IllegalArgumentException()
         }
     }
 
