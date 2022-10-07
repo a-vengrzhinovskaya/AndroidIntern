@@ -17,9 +17,11 @@ private const val API_KEY = "8db7a14a267d03a0f3c870429391132e"
 private const val CITY = "Kemerovo"
 private const val UNITS = "metric"
 private const val BASE_URL = "https://api.openweathermap.org/"
+private const val FRAGMENT_TAG = "weather"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var weatherStoreFragment: WeatherFragment
     private val weatherApi by lazy {
         createWeatherApi()
     }
@@ -32,16 +34,28 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecyclerView()
-        if (WeatherStore.weathers == null) {
+        initFragment()
+
+        if (weatherStoreFragment.weathers == null) {
             getWeather()
         } else {
             restoreWeather()
         }
     }
 
+    private fun initFragment() {
+        weatherStoreFragment =
+            supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as WeatherFragment?
+                ?: WeatherFragment().apply {
+                    supportFragmentManager.beginTransaction()
+                        .add(this, FRAGMENT_TAG)
+                        .commit()
+                }
+    }
+
     private fun restoreWeather() {
-        adapter.submitList(WeatherStore.weathers?.list)
-        initToolbar(WeatherStore.weathers?.city?.name.toString())
+        adapter.submitList(weatherStoreFragment.weathers?.list)
+        initToolbar(weatherStoreFragment.weathers?.city?.name.toString())
     }
 
     private fun getWeather() {
@@ -54,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         response.body()?.let { weatherData ->
                             adapter.submitList(weatherData.list)
-                            WeatherStore.weathers = weatherData
+                            weatherStoreFragment.weathers = weatherData
                             initToolbar(weatherData.city.name)
                         }
                     }
