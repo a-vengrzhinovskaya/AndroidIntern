@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.androidintern.data.WeatherNW
 import com.example.androidintern.databinding.ItemColdWeatherHolderBinding
 import com.example.androidintern.databinding.ItemWarmWeatherHolderBinding
 
@@ -14,7 +15,7 @@ private const val TEMPERATURE = 10
 private const val TYPE_WARM = 1
 private const val TYPE_COLD = 2
 
-class NumberAdapter :
+class WeatherAdapter :
     ListAdapter<WeatherNW.WeatherData, RecyclerView.ViewHolder>(WeatherItemDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {

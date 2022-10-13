@@ -1,4 +1,4 @@
-package com.example.androidintern
+package com.example.androidintern.data
 
 import retrofit2.Call
 import retrofit2.http.GET

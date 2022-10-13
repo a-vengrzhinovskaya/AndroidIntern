@@ -1,8 +1,12 @@
-package com.example.androidintern
+package com.example.androidintern.presentation
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.androidintern.WeatherAdapter
+import com.example.androidintern.data.WeatherApi
+import com.example.androidintern.data.WeatherNW
 import com.example.androidintern.databinding.ActivityMainBinding
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,15 +21,14 @@ private const val API_KEY = "8db7a14a267d03a0f3c870429391132e"
 private const val CITY = "Kemerovo"
 private const val UNITS = "metric"
 private const val BASE_URL = "https://api.openweathermap.org/"
-private const val FRAGMENT_TAG = "weather"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var weatherStoreFragment: WeatherFragment
     private val weatherApi by lazy {
         createWeatherApi()
     }
-    private val adapter = NumberAdapter()
+    private val adapter = WeatherAdapter()
+    private val weatherModel: WeatherViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,28 +37,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecyclerView()
-        initFragment()
 
-        if (weatherStoreFragment.weathers == null) {
+        if (weatherModel.weathers == null) {
             getWeather()
         } else {
             restoreWeather()
         }
     }
 
-    private fun initFragment() {
-        weatherStoreFragment =
-            supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as WeatherFragment?
-                ?: WeatherFragment().apply {
-                    supportFragmentManager.beginTransaction()
-                        .add(this, FRAGMENT_TAG)
-                        .commit()
-                }
-    }
-
     private fun restoreWeather() {
-        adapter.submitList(weatherStoreFragment.weathers?.list)
-        initToolbar(weatherStoreFragment.weathers?.city?.name.toString())
+        adapter.submitList(weatherModel.weathers?.list)
+        initToolbar(weatherModel.weathers?.city?.name.toString())
     }
 
     private fun getWeather() {
@@ -68,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         response.body()?.let { weatherData ->
                             adapter.submitList(weatherData.list)
-                            weatherStoreFragment.weathers = weatherData
+                            weatherModel.weathers = weatherData
                             initToolbar(weatherData.city.name)
                         }
                     }
@@ -93,10 +85,9 @@ class MainActivity : AppCompatActivity() {
     private fun getOkHttpClient(): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        val okHttpClient = OkHttpClient.Builder()
+        return OkHttpClient.Builder()
             .addInterceptor(interceptor)
             .build()
-        return okHttpClient
     }
 
     private fun initToolbar(cityName: String) {
