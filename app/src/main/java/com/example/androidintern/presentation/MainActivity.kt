@@ -3,32 +3,15 @@ package com.example.androidintern.presentation
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.WeatherAdapter
-import com.example.androidintern.data.WeatherApi
-import com.example.androidintern.data.WeatherNW
 import com.example.androidintern.databinding.ActivityMainBinding
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import timber.log.Timber
-
-private const val API_KEY = "8db7a14a267d03a0f3c870429391132e"
-private const val CITY = "Kemerovo"
-private const val UNITS = "metric"
-private const val BASE_URL = "https://api.openweathermap.org/"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val weatherApi by lazy {
-        createWeatherApi()
-    }
     private val adapter = WeatherAdapter()
-    private val weatherModel: WeatherViewModel by viewModels()
+    private val weatherViewModel: WeatherViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,57 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecyclerView()
-
-        if (weatherModel.weathers == null) {
-            getWeather()
-        } else {
-            restoreWeather()
-        }
-    }
-
-    private fun restoreWeather() {
-        adapter.submitList(weatherModel.weathers?.list)
-        initToolbar(weatherModel.weathers?.city?.name.toString())
-    }
-
-    private fun getWeather() {
-        weatherApi.getWeather(CITY, API_KEY, UNITS).enqueue(
-            object : Callback<WeatherNW> {
-                override fun onResponse(
-                    call: Call<WeatherNW>,
-                    response: Response<WeatherNW>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let { weatherData ->
-                            adapter.submitList(weatherData.list)
-                            weatherModel.weathers = weatherData
-                            initToolbar(weatherData.city.name)
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<WeatherNW>, t: Throwable) {
-                    Timber.d(t)
-                }
-            }
-        )
-    }
-
-    private fun createWeatherApi(): WeatherApi {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(getOkHttpClient())
-            .build()
-        return retrofit.create(WeatherApi::class.java)
-    }
-
-    private fun getOkHttpClient(): OkHttpClient {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        return OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .build()
+        observeWeather()
     }
 
     private fun initToolbar(cityName: String) {
@@ -98,5 +31,14 @@ class MainActivity : AppCompatActivity() {
         binding.rvWeather.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvWeather.adapter = adapter
+    }
+
+    private fun observeWeather() {
+        weatherViewModel.getWeather().observe(this, Observer {
+            it.let { weatherData ->
+                adapter.submitList(weatherData.list)
+                initToolbar(weatherData.city.name)
+            }
+        })
     }
 }
