@@ -34,11 +34,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeWeather() {
-        weatherViewModel.getWeather().observe(this, Observer {
-            it.let { weatherData ->
-                adapter.submitList(weatherData.list)
-                initToolbar(weatherData.city.name)
-            }
-        })
+        weatherViewModel.weathers.observe(this) { weathers ->
+            adapter.submitList(weathers)
+        }
+        weatherViewModel.cityName.observe(this) { city ->
+            initToolbar(city)
+        }
     }
 }

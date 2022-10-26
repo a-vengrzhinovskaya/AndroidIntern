@@ -1,5 +1,6 @@
 package com.example.androidintern.presentation
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.androidintern.App
@@ -14,11 +15,15 @@ private const val CITY = "Kemerovo"
 private const val UNITS = "metric"
 
 class WeatherViewModel : ViewModel() {
-    private var weathers = MutableLiveData<WeatherNW>()
+    private val _weathers = MutableLiveData<List<WeatherNW.WeatherData>>()
+    val weathers: LiveData<List<WeatherNW.WeatherData>>
+        get() = _weathers
+    private val _cityName = MutableLiveData<String>()
+    val cityName: LiveData<String>
+        get() = _cityName
 
-    fun getWeather(): MutableLiveData<WeatherNW> {
+    init {
         loadWeather()
-        return weathers
     }
 
     private fun loadWeather() {
@@ -30,7 +35,8 @@ class WeatherViewModel : ViewModel() {
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let { weatherData ->
-                            weathers.postValue(weatherData)
+                            _weathers.postValue(weatherData.list)
+                            _cityName.postValue(weatherData.city.name)
                         }
                     }
                 }
