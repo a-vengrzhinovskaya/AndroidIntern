@@ -1,4 +1,4 @@
-package com.example.androidintern.data
+package com.example.androidintern.data.network
 
 
 import com.google.gson.annotations.SerializedName

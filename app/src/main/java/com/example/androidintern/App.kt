@@ -1,17 +1,21 @@
 package com.example.androidintern
 
 import android.app.Application
-import com.example.androidintern.data.WeatherApi
+import androidx.room.Room
+import com.example.androidintern.data.network.WeatherApi
+import com.example.androidintern.data.database.WeatherDatabase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 
-private const val BASE_URL = "https://api.openweathermap.org/"
+private const val BASE_URL = "http://api.openweathermap.org/"
 
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
         plantTimber()
+        initWeatherApi()
+        initWeatherDatabase()
     }
 
     private fun plantTimber() {
@@ -20,17 +24,25 @@ class App : Application() {
         }
     }
 
-    companion object {
-        val weatherApi by lazy {
-            createWeatherApi()
-        }
+    private fun initWeatherApi() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        weatherApi = retrofit.create(WeatherApi::class.java)
+    }
 
-        private fun createWeatherApi(): WeatherApi {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            return retrofit.create(WeatherApi::class.java)
-        }
+    private fun initWeatherDatabase() {
+        weatherDB = Room.databaseBuilder(
+            this,
+            WeatherDatabase::class.java, "weather"
+        ).build()
+    }
+
+    companion object {
+        lateinit var weatherApi: WeatherApi
+            private set
+        lateinit var weatherDB: WeatherDatabase
+            private set
     }
 }

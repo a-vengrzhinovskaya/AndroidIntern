@@ -1,4 +1,4 @@
-package com.example.androidintern
+package com.example.androidintern.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,17 +6,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.androidintern.data.WeatherNW
 import com.example.androidintern.databinding.ItemColdWeatherHolderBinding
 import com.example.androidintern.databinding.ItemWarmWeatherHolderBinding
+import com.example.androidintern.presentation.model.WeatherUI
 
-private const val ICON_URL = "https://openweathermap.org/img/wn/"
-private const val TEMPERATURE = 10
+private const val MIN_TEMPERATURE = 10
 private const val TYPE_WARM = 1
 private const val TYPE_COLD = 2
 
 class WeatherAdapter :
-    ListAdapter<WeatherNW.WeatherData, RecyclerView.ViewHolder>(WeatherItemDiffCallback) {
+    ListAdapter<WeatherUI.Weather, RecyclerView.ViewHolder>(WeatherItemDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
             TYPE_WARM -> {
@@ -49,7 +48,7 @@ class WeatherAdapter :
     }
 
     override fun getItemViewType(position: Int): Int =
-        if (getItem(position).main.temp < TEMPERATURE) {
+        if (getItem(position).temperature < MIN_TEMPERATURE) {
             TYPE_COLD
         } else {
             TYPE_WARM
@@ -58,43 +57,43 @@ class WeatherAdapter :
 
 class WarmWeatherViewHolder(private val binding: ItemWarmWeatherHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(weather: WeatherNW.WeatherData) {
-        binding.tvDate.text = weather.dtTxt
+    fun bind(weather: WeatherUI.Weather) {
+        binding.tvDate.text = weather.date
         Glide
             .with(binding.root)
-            .load(getImageURL(weather))
+            .load(getImageURL(weather.imageUrl))
             .into(binding.ivWeatherIcon)
-        binding.tvPressure.text = weather.main.pressure.toString()
-        binding.tvTemperature.text = weather.main.temp.toString()
+        binding.tvPressure.text = weather.pressure.toString()
+        binding.tvTemperature.text = weather.temperature.toString()
     }
 }
 
 class ColdWeatherViewHolder(private val binding: ItemColdWeatherHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(weather: WeatherNW.WeatherData) {
-        binding.tvDate.text = weather.dtTxt
+    fun bind(weather: WeatherUI.Weather) {
+        binding.tvDate.text = weather.date
         Glide
             .with(binding.root)
-            .load(getImageURL(weather))
+            .load(getImageURL(weather.imageUrl))
             .into(binding.ivWeatherIcon)
-        binding.tvPressure.text = weather.main.pressure.toString()
-        binding.tvTemperature.text = weather.main.temp.toString()
+        binding.tvPressure.text = weather.pressure.toString()
+        binding.tvTemperature.text = weather.temperature.toString()
     }
 }
 
-private fun getImageURL(weather: WeatherNW.WeatherData) =
-    "$ICON_URL${weather.weather.first().icon}.png"
+private fun getImageURL(imageUrl: String) =
+    "https://openweathermap.org/img/wn/$imageUrl.png"
 
-object WeatherItemDiffCallback : DiffUtil.ItemCallback<WeatherNW.WeatherData>() {
+object WeatherItemDiffCallback : DiffUtil.ItemCallback<WeatherUI.Weather>() {
     override fun areItemsTheSame(
-        oldItem: WeatherNW.WeatherData,
-        newItem: WeatherNW.WeatherData
+        oldItem: WeatherUI.Weather,
+        newItem: WeatherUI.Weather
     ): Boolean =
         oldItem == newItem
 
     override fun areContentsTheSame(
-        oldItem: WeatherNW.WeatherData,
-        newItem: WeatherNW.WeatherData
+        oldItem: WeatherUI.Weather,
+        newItem: WeatherUI.Weather
     ): Boolean =
         oldItem == newItem
 }
