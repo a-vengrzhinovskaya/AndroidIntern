@@ -2,8 +2,8 @@ package com.example.androidintern
 
 import android.app.Application
 import androidx.room.Room
-import com.example.androidintern.data.network.WeatherApi
 import com.example.androidintern.data.database.WeatherDatabase
+import com.example.androidintern.data.network.WeatherApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
@@ -35,7 +35,8 @@ class App : Application() {
     private fun initWeatherDatabase() {
         weatherDB = Room.databaseBuilder(
             this,
-            WeatherDatabase::class.java, "weather"
+            WeatherDatabase::class.java,
+            "weather"
         ).build()
     }
 
