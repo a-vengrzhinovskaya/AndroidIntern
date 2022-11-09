@@ -41,7 +41,7 @@ class MainViewModel : ViewModel() {
                         )
                     }
                 )
-                App.weatherDB.weatherDao().deleteOldAndInsert(
+                App.weatherDB.weatherDao().update(
                     weatherData.list.map {
                         WeatherSW(
                             imageUrl = it.weather.first().icon,

@@ -1,22 +1,25 @@
 package com.example.androidintern.data.database
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
 import com.example.androidintern.data.network.WeatherSW
 
 @Dao
 interface WeatherDao {
     @Query("SELECT * FROM weathersw")
-    fun getAll(): List<WeatherSW>
+    suspend fun getAll(): List<WeatherSW>
 
     @Insert
-    fun insertAll(vararg: List<WeatherSW>)
+    suspend fun insertAll(vararg: List<WeatherSW>)
 
-    @Delete
-    fun deleteAll(vararg: List<WeatherSW>)
+    @Query("DELETE FROM weathersw")
+    suspend fun deleteAll()
 
     @Transaction
-    fun deleteOldAndInsert(newWeather: List<WeatherSW>) {
-        deleteAll(getAll())
+    suspend fun update(newWeather: List<WeatherSW>) {
+        deleteAll()
         insertAll(newWeather)
     }
 }
