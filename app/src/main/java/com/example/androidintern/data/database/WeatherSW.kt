@@ -1,4 +1,4 @@
-package com.example.androidintern.data.network
+package com.example.androidintern.data.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

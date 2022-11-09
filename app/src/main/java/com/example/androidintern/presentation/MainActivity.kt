@@ -4,12 +4,19 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.androidintern.App
 import com.example.androidintern.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val adapter = WeatherAdapter()
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels() {
+        MainViewModel.provideFactory(
+            database = App.weatherDB,
+            api = App.weatherApi,
+            getSharedPreferences(MainViewModel.SHARED_PREF_NAME, MODE_PRIVATE)
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
