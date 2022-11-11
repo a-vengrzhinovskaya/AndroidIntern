@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.androidintern.databinding.ItemColdWeatherHolderBinding
 import com.example.androidintern.databinding.ItemWarmWeatherHolderBinding
-import com.example.androidintern.presentation.model.WeatherUI
+import com.example.androidintern.domain.Weather
 
 private const val MIN_TEMPERATURE = 10
 private const val TYPE_WARM = 1
 private const val TYPE_COLD = 2
 
 class WeatherAdapter :
-    ListAdapter<WeatherUI.Weather, RecyclerView.ViewHolder>(WeatherItemDiffCallback) {
+    ListAdapter<Weather, RecyclerView.ViewHolder>(WeatherItemDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
             TYPE_WARM -> {
@@ -57,7 +57,7 @@ class WeatherAdapter :
 
 class WarmWeatherViewHolder(private val binding: ItemWarmWeatherHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(weather: WeatherUI.Weather) {
+    fun bind(weather: Weather) {
         binding.tvDate.text = weather.date
         Glide
             .with(binding.root)
@@ -70,7 +70,7 @@ class WarmWeatherViewHolder(private val binding: ItemWarmWeatherHolderBinding) :
 
 class ColdWeatherViewHolder(private val binding: ItemColdWeatherHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(weather: WeatherUI.Weather) {
+    fun bind(weather: Weather) {
         binding.tvDate.text = weather.date
         Glide
             .with(binding.root)
@@ -84,16 +84,16 @@ class ColdWeatherViewHolder(private val binding: ItemColdWeatherHolderBinding) :
 private fun getImageURL(imageUrl: String) =
     "https://openweathermap.org/img/wn/$imageUrl.png"
 
-object WeatherItemDiffCallback : DiffUtil.ItemCallback<WeatherUI.Weather>() {
+object WeatherItemDiffCallback : DiffUtil.ItemCallback<Weather>() {
     override fun areItemsTheSame(
-        oldItem: WeatherUI.Weather,
-        newItem: WeatherUI.Weather
+        oldItem: Weather,
+        newItem: Weather
     ): Boolean =
         oldItem == newItem
 
     override fun areContentsTheSame(
-        oldItem: WeatherUI.Weather,
-        newItem: WeatherUI.Weather
+        oldItem: Weather,
+        newItem: Weather
     ): Boolean =
         oldItem == newItem
 }

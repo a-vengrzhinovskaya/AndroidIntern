@@ -8,9 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.androidintern.data.database.WeatherDatabase
-import com.example.androidintern.data.database.WeatherSW
 import com.example.androidintern.data.network.WeatherApi
-import com.example.androidintern.presentation.model.WeatherUI
+import com.example.androidintern.data.toDomain
+import com.example.androidintern.data.toSW
+import com.example.androidintern.domain.Weather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -25,8 +26,8 @@ class MainViewModel(
     private val api: WeatherApi,
     private val sharedPRef: SharedPreferences
 ) : ViewModel() {
-    private val _weathers = MutableLiveData<List<WeatherUI.Weather>>()
-    val weathers: LiveData<List<WeatherUI.Weather>>
+    private val _weathers = MutableLiveData<List<Weather>>()
+    val weathers: LiveData<List<Weather>>
         get() = _weathers
     private val _cityName = MutableLiveData<String>()
     val cityName: LiveData<String>
@@ -49,44 +50,24 @@ class MainViewModel(
 
     private suspend fun loadWeatherFromNetwork() {
         val weatherData = api.getWeather(CITY, API_KEY, UNITS)
-        _weathers.postValue(
-            weatherData.list.map {
-                WeatherUI.Weather(
-                    imageUrl = it.weather.first().icon,
-                    pressure = it.main.pressure,
-                    temperature = it.main.temp,
-                    date = it.dtTxt
-                )
-            }
-        )
+        _weathers.postValue(weatherData.list.map { it.toDomain() })
         _cityName.postValue(weatherData.city.name)
-
-        database.weatherDao().update(
-            weatherData.list.map {
-                WeatherSW(
-                    imageUrl = it.weather.first().icon,
-                    pressure = it.main.pressure,
-                    temperature = it.main.temp,
-                    date = it.dtTxt
-                )
-            }
-        )
-        sharedPRef.edit {
-            putString(SHARED_PREF_NAME, weatherData.city.name)
-        }
+        saveWeather()
     }
 
     private suspend fun loadWeatherFromDatabase() {
-        val weather = database.weatherDao().getAll().map {
-            WeatherUI.Weather(
-                imageUrl = it.imageUrl,
-                pressure = it.pressure,
-                temperature = it.temperature,
-                date = it.date
-            )
-        }
+        val weather = database.weatherDao().getAll().map { it.toDomain() }
         _weathers.postValue(weather)
         _cityName.postValue(sharedPRef.getString(SHARED_PREF_NAME, CITY))
+    }
+
+    private suspend fun saveWeather() {
+        _weathers.value?.let { weatherList ->
+            database.weatherDao().update(weatherList.map { it.toSW() })
+        }
+        sharedPRef.edit {
+            putString(SHARED_PREF_NAME, _cityName.value)
+        }
     }
 
 
