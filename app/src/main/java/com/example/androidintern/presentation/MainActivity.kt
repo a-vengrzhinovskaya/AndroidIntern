@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.App
+import com.example.androidintern.data.WeatherRepositoryImpl
 import com.example.androidintern.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -12,9 +13,14 @@ class MainActivity : AppCompatActivity() {
     private val adapter = WeatherAdapter()
     private val viewModel: MainViewModel by viewModels() {
         MainViewModel.provideFactory(
-            database = App.weatherDB,
-            api = App.weatherApi,
-            getSharedPreferences(MainViewModel.SHARED_PREF_NAME, MODE_PRIVATE)
+            WeatherRepositoryImpl(
+                database = App.weatherDB,
+                api = App.weatherApi,
+                sharedPref = getSharedPreferences(
+                    WeatherRepositoryImpl.SHARED_PREF_NAME,
+                    MODE_PRIVATE
+                )
+            )
         )
     }
 
