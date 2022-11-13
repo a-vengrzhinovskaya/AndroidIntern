@@ -5,23 +5,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.App
-import com.example.androidintern.data.WeatherRepositoryImpl
 import com.example.androidintern.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val adapter = WeatherAdapter()
     private val viewModel: MainViewModel by viewModels() {
-        MainViewModel.provideFactory(
-            WeatherRepositoryImpl(
-                database = App.weatherDB,
-                api = App.weatherApi,
-                sharedPref = getSharedPreferences(
-                    WeatherRepositoryImpl.SHARED_PREF_NAME,
-                    MODE_PRIVATE
-                )
-            )
-        )
+        MainViewModel.provideFactory(App.weatherRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +38,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.weathers.observe(this) { weathers ->
             adapter.submitList(weathers)
         }
-        viewModel.cityName.observe(this) { city ->
-            initToolbar(city)
+        viewModel.city.observe(this) { city ->
+            initToolbar(city.name)
         }
     }
 }

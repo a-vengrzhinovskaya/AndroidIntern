@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.androidintern.data.WeatherRepositoryImpl
+import com.example.androidintern.domain.City
 import com.example.androidintern.domain.Weather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,9 +17,9 @@ class MainViewModel(
     private val _weathers = MutableLiveData<List<Weather>>()
     val weathers: LiveData<List<Weather>>
         get() = _weathers
-    private val _cityName = MutableLiveData<String>()
-    val cityName: LiveData<String>
-        get() = _cityName
+    private val _city = MutableLiveData<City>()
+    val city: LiveData<City>
+        get() = _city
 
     init {
         loadForecast()
@@ -26,8 +27,8 @@ class MainViewModel(
 
     private fun loadForecast() {
         viewModelScope.launch(Dispatchers.IO) {
-            _weathers.postValue(repository.getWeather())
-            _cityName.postValue(repository.getCity().name)
+            _weathers.postValue(repository.getWeather().weatherList)
+            _city.postValue(repository.getWeather().city)
         }
     }
 

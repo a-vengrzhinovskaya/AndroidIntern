@@ -2,6 +2,7 @@ package com.example.androidintern
 
 import android.app.Application
 import androidx.room.Room
+import com.example.androidintern.data.WeatherRepositoryImpl
 import com.example.androidintern.data.database.WeatherDatabase
 import com.example.androidintern.data.network.WeatherApi
 import retrofit2.Retrofit
@@ -14,8 +15,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         plantTimber()
-        initWeatherApi()
-        initWeatherDatabase()
+        initRepository()
     }
 
     private fun plantTimber() {
@@ -24,26 +24,34 @@ class App : Application() {
         }
     }
 
-    private fun initWeatherApi() {
+    private fun initWeatherApi(): WeatherApi {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        weatherApi = retrofit.create(WeatherApi::class.java)
+        return retrofit.create(WeatherApi::class.java)
     }
 
-    private fun initWeatherDatabase() {
-        weatherDB = Room.databaseBuilder(
+    private fun initWeatherDatabase() =
+        Room.databaseBuilder(
             this,
             WeatherDatabase::class.java,
             "weather"
         ).build()
+
+    private fun initRepository() {
+        weatherRepository = WeatherRepositoryImpl(
+            database = initWeatherDatabase(),
+            api = initWeatherApi(),
+            sharedPref = getSharedPreferences(
+                WeatherRepositoryImpl.SHARED_PREF_NAME,
+                MODE_PRIVATE
+            )
+        )
     }
 
     companion object {
-        lateinit var weatherApi: WeatherApi
-            private set
-        lateinit var weatherDB: WeatherDatabase
+        lateinit var weatherRepository: WeatherRepositoryImpl
             private set
     }
 }
