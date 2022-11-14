@@ -14,7 +14,7 @@ private const val MIN_TEMPERATURE = 10
 private const val TYPE_WARM = 1
 private const val TYPE_COLD = 2
 
-class WeatherAdapter :
+class WeatherAdapter(private val weatherLongCLickCallback: (Weather) -> Unit) :
     ListAdapter<Weather, RecyclerView.ViewHolder>(WeatherItemDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
@@ -42,8 +42,8 @@ class WeatherAdapter :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is WarmWeatherViewHolder -> holder.bind(getItem(position))
-            is ColdWeatherViewHolder -> holder.bind(getItem(position))
+            is WarmWeatherViewHolder -> holder.bind(getItem(position), weatherLongCLickCallback)
+            is ColdWeatherViewHolder -> holder.bind(getItem(position), weatherLongCLickCallback)
         }
     }
 
@@ -57,7 +57,7 @@ class WeatherAdapter :
 
 class WarmWeatherViewHolder(private val binding: ItemWarmWeatherHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(weather: Weather) {
+    fun bind(weather: Weather, callback: (Weather) -> Unit) {
         binding.tvDate.text = weather.date
         Glide
             .with(binding.root)
@@ -65,12 +65,16 @@ class WarmWeatherViewHolder(private val binding: ItemWarmWeatherHolderBinding) :
             .into(binding.ivWeatherIcon)
         binding.tvPressure.text = weather.pressure.toString()
         binding.tvTemperature.text = weather.temperature.toString()
+        binding.root.setOnLongClickListener {
+            callback(weather)
+            true
+        }
     }
 }
 
 class ColdWeatherViewHolder(private val binding: ItemColdWeatherHolderBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(weather: Weather) {
+    fun bind(weather: Weather, callback: (Weather) -> Unit) {
         binding.tvDate.text = weather.date
         Glide
             .with(binding.root)
@@ -78,6 +82,10 @@ class ColdWeatherViewHolder(private val binding: ItemColdWeatherHolderBinding) :
             .into(binding.ivWeatherIcon)
         binding.tvPressure.text = weather.pressure.toString()
         binding.tvTemperature.text = weather.temperature.toString()
+        binding.root.setOnLongClickListener {
+            callback(weather)
+            true
+        }
     }
 }
 
