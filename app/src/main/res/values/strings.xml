@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">AndroidIntern</string>
     <string name="ok">OK</string>
+    <string name="apply">Apply</string>
+    <string name="search">Search</string>
+    <string name="snack_message">loaded from database</string>
 </resources>
