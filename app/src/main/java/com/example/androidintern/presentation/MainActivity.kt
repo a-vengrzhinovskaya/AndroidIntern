@@ -6,13 +6,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidintern.App
+import com.example.androidintern.R
 import com.example.androidintern.databinding.ActivityMainBinding
 import com.example.androidintern.domain.Weather
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val adapter =
-        WeatherAdapter(weatherLongCLickCallback = { weather: Weather -> shareWeather(weather) })
+        WeatherAdapter { weather: Weather ->
+            shareWeather(weather)
+        }
     private val viewModel: MainViewModel by viewModels() {
         MainViewModel.provideFactory(App.weatherRepository)
     }
@@ -41,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, createWeatherInfoString(weather))
-            putExtra(Intent.EXTRA_SUBJECT, viewModel.city.value?.name)
+            putExtra(Intent.EXTRA_SUBJECT, viewModel.weatherData.value?.city?.name)
             type = "text/plain"
         }
         startActivity(Intent.createChooser(shareIntent, null))
@@ -51,11 +55,18 @@ class MainActivity : AppCompatActivity() {
         "date:${weather.date}\ntemperature:${weather.temperature}"
 
     private fun observeWeather() {
-        viewModel.weathers.observe(this) { weathers ->
-            adapter.submitList(weathers)
+        viewModel.weatherData.observe(this) { weathers ->
+            adapter.submitList(weathers.weatherList)
+            initToolbar(weathers.city.name)
         }
-        viewModel.city.observe(this) { city ->
-            initToolbar(city.name)
+        viewModel.loadEvent.observe(this) {
+            it.getContentIfNotHandled()?.let {
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.snack_message),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 }

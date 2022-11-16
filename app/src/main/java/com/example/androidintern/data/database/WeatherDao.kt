@@ -1,8 +1,10 @@
 package com.example.androidintern.data.database
 
+import android.content.Context
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Room
 import androidx.room.Transaction
 
 @Dao
@@ -20,5 +22,14 @@ interface WeatherDao {
     suspend fun update(newWeather: List<WeatherSW>) {
         deleteAll()
         insertAll(newWeather)
+    }
+
+    companion object {
+        fun initWeatherDatabase(context: Context) =
+            Room.databaseBuilder(
+                context,
+                WeatherDatabase::class.java,
+                "weather"
+            ).build()
     }
 }
